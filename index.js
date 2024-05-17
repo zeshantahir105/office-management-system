@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 
-const { sequelize } = require("./sequelize/models/");
+const { sequelize } = require("./models/");
 const port = 3000;
 const connectDb = async () => {
   console.log("Checking database connection...");
