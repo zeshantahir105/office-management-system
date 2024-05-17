@@ -3,33 +3,30 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("users", {
-      id: {
+    await queryInterface.createTable("attendance_notes", {
+      note_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         autoIncrement: true,
         primaryKey: true,
       },
-      role_type: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      password: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      email: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      age: {
+      attendance_id: {
         type: Sequelize.INTEGER,
-        allowNull: true,
+        allowNull: false,
+        references: {
+          model: "attendance",
+          key: "attendance_id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      },
+      note: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      date_time: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.fn("NOW"),
       },
       created_at: {
         type: Sequelize.DATE,
@@ -45,6 +42,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("users");
+    await queryInterface.dropTable("attendance_notes");
   },
 };
