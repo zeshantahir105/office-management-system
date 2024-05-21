@@ -19,14 +19,25 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
+      reply_to_note_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
+      commenter_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "users",
+          key: "id",
+        },
+      },
       note: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      date_time: {
+      deleted_at: {
         type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.fn("NOW"),
+        allowNull: true,
       },
       created_at: {
         type: Sequelize.DATE,

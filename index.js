@@ -1,8 +1,21 @@
 const express = require("express");
-const app = express();
-
 const { sequelize } = require("./models/");
+const { registerUser, signInUser } = require("./controllers/auth.controllers");
+const authenticate = require("./middlewares/authenticate");
+const authRoutes = require("./routers/authentication");
+const employeeAttendanceRoutes = require("./routers/employeeAttendance");
+
+const app = express();
+app.use(express.json());
+
+require("dotenv").config();
+
+// Routes
+app.use("/authentication", authRoutes);
+app.use("/attendance", authenticate, employeeAttendanceRoutes);
+
 const port = 3000;
+
 const connectDb = async () => {
   console.log("Checking database connection...");
 
@@ -15,15 +28,8 @@ const connectDb = async () => {
   }
 };
 
-// routes
-
-app.get("/", (req, res) => {
-  res.send("HELLO NODE API :)");
-});
-
 (async () => {
   await connectDb();
-
   console.log(`Attempting to run server on post ${port}`);
   app.listen(port, () => {
     console.log(`Node API app is running on port ${port}`);
