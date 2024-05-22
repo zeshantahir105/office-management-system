@@ -6,13 +6,13 @@ const {
 const express = require("express");
 const router = express.Router();
 
-router.post("/sign-up", async (req, res) => {
-  await registerUser(req, res);
+router.post("/sign-up", async (req, res, next) => {
+  await registerUser(req, res, next);
   return;
 });
 
-router.get("/sign-in", async (req, res) => {
-  await signInUser(req, res);
+router.get("/sign-in", async (req, res, next) => {
+  await signInUser(req, res, next);
   return;
 });
 

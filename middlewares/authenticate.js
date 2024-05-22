@@ -7,22 +7,31 @@ async function authenticate(req, res, next) {
   let user;
 
   if (token) {
-    user = await db.user_sessions.findOne({
-      where: { token },
+    user = await db.users.findOne({
+      attributes: ["roleType", "id"],
+      include: [
+        {
+          model: db.user_sessions,
+          as: "sessions",
+          where: { token },
+          attributes: [],
+        },
+      ],
     });
   }
 
   if (!user) return res.sendStatus(401); // If there's no token, return 401 (Unauthorized)
 
-  const data = jwt.verify(token, process.env.JWT_SECRET, (err) => {
+  console.log("USER", { user });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err) => {
     if (err) return res.sendStatus(403); // If the token is invalid, return 403 (Forbidden)
-    req.user = user;
+    req.user = {
+      id: user.id,
+      roleType: user.roleType,
+    };
     next();
   });
-
-  console.log({ data });
-
-  //   return res.sendStatus(401);
 }
 
 module.exports = authenticate;
