@@ -1,9 +1,10 @@
 const express = require("express");
 const { sequelize } = require("./models/");
-const { registerUser, signInUser } = require("./controllers/auth.controllers");
 const authenticate = require("./middlewares/authenticate");
-const authRoutes = require("./routers/authentication");
-const employeeAttendanceRoutes = require("./routers/employeeAttendance");
+
+const authRoutes = require("./routes/auth.routes");
+const employeeAttendanceRoutes = require("./routes/employee-attendance.routes");
+const leaveRequestRoutes = require("./routes/leave-requests.routes");
 
 const app = express();
 app.use(express.json());
@@ -13,6 +14,7 @@ require("dotenv").config();
 // Routes
 app.use("/authentication", authRoutes);
 app.use("/attendance", authenticate, employeeAttendanceRoutes);
+app.use("/leave-requests/", authenticate, leaveRequestRoutes);
 
 const port = 3000;
 

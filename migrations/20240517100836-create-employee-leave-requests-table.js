@@ -9,7 +9,7 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
       },
-      requestor_id: {
+      requester_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -17,11 +17,24 @@ module.exports = {
           key: "id",
         },
       },
+      approver_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "users",
+          key: "id",
+        },
+      },
       status: {
-        type: Sequelize.STRING,
+        allowNull: false,
+        type: Sequelize.ENUM("pending", "approved", "rejected"),
+        defaultValue: "pending",
+      },
+      date_from: {
+        type: Sequelize.DATE,
         allowNull: false,
       },
-      date_time: {
+      date_to: {
         type: Sequelize.DATE,
         allowNull: false,
       },

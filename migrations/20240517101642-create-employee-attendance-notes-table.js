@@ -22,6 +22,12 @@ module.exports = {
       reply_to_note_id: {
         type: Sequelize.INTEGER,
         allowNull: true,
+        references: {
+          model: "leave_request_notes",
+          key: "note_id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
       commenter_id: {
         type: Sequelize.INTEGER,

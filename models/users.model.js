@@ -43,6 +43,26 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "user_id",
       as: "sessions",
     });
+
+    User.hasMany(models.attendance, {
+      foreignKey: "user_id",
+      as: "attendance",
+    });
+
+    User.hasMany(models.attendance_notes, {
+      foreignKey: "commenter_id",
+      as: "attendance_notes",
+    });
+
+    User.hasMany(models.leave_requests, {
+      foreignKey: "requester_id",
+      as: "leave_requests",
+    });
+
+    User.hasMany(models.leave_request_notes, {
+      foreignKey: "commenter_id",
+      as: "leave_request_notes",
+    });
   };
 
   return User;

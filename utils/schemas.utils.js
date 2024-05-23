@@ -5,7 +5,7 @@ const emailSchema = Joi.string()
   .required();
 
 const passwordSchema = Joi.string()
-  .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
+  .pattern(new RegExp("^[a-zA-Z0-9!@#$%^&*)(+=._-]{5,30}$"))
   .required();
 
 module.exports = {

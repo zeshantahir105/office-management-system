@@ -11,8 +11,8 @@ module.exports = {
         primaryKey: true,
       },
       role_type: {
-        type: Sequelize.STRING,
         allowNull: false,
+        type: Sequelize.ENUM("admin", "employee"),
       },
       name: {
         type: Sequelize.STRING,

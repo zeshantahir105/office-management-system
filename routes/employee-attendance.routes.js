@@ -1,20 +1,24 @@
 const authenticate = require("../middlewares/authenticate");
 const {
-  markAttendance,
+  markOrUpdateAttendace,
   addAttendanceNote,
   deleteAttendanceNote,
   updateAttendanceNote,
-  viewAdminAttendanceNotes,
   replyToAttendanceNotes,
-} = require("./../controllers/auth.controllers");
+  viewAttendanceNotes,
+} = require("../controllers/attendance.controllers");
 
 const express = require("express");
+const {
+  viewPaginatedRecordList,
+} = require("../controllers/helpers/helpers.controllers");
+
 const router = express.Router();
 
 router.post(
   "/mark",
   authenticate,
-  async (req, res, next) => await markAttendance(req, res, next)
+  async (req, res, next) => await markOrUpdateAttendace(req, res, next)
 );
 
 router.post(
@@ -36,9 +40,22 @@ router.post(
 );
 
 router.get(
-  "/view-admin-notes",
+  "/view-employee-attendance",
   authenticate,
-  async (req, res, next) => await viewAdminAttendanceNotes(req, res, next)
+  async (req, res, next) =>
+    await viewPaginatedRecordList({
+      req,
+      res,
+      next,
+      tableName: "attendance",
+    })
+);
+
+// it can fetch the all notes against the attendance also, by the user role type
+router.get(
+  "/view-notes",
+  authenticate,
+  async (req, res, next) => await viewAttendanceNotes(req, res, next)
 );
 
 router.post(

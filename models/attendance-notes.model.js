@@ -35,6 +35,12 @@ module.exports = (sequelize, DataTypes) => {
         field: "reply_to_note_id",
         type: DataTypes.INTEGER,
         allowNull: true,
+        references: {
+          model: "leave_request_notes",
+          key: "note_id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
       note: {
         type: DataTypes.STRING,
@@ -58,6 +64,16 @@ module.exports = (sequelize, DataTypes) => {
     AttendanceNote.belongsTo(models.attendance, {
       foreignKey: "attendance_id",
       as: "attendance",
+    });
+
+    AttendanceNote.belongsTo(models.users, {
+      foreignKey: "commenter_id",
+      as: "commenter",
+    });
+
+    AttendanceNote.belongsTo(models.attendance_notes, {
+      foreignKey: "reply_to_note_id",
+      as: "replyToNote",
     });
   };
 

@@ -20,6 +20,17 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
+      commenterId: {
+        field: "commenter_id",
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "user",
+          key: "user_id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      },
       replyToNoteId: {
         field: "reply_to_note_id",
         type: DataTypes.INTEGER,
@@ -31,16 +42,17 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
-      dateTime: {
-        field: "date_time",
+      deletedAt: {
+        field: "deleted_at",
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: true,
       },
     },
     {
       tableName: "leave_request_notes",
       underscored: true,
       timestamps: true,
+      paranoid: true,
     }
   );
 
@@ -53,9 +65,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "reply_to_note_id",
       as: "replyToNote",
     });
-    LeaveRequestNote.hasMany(models.leave_request_notes, {
-      foreignKey: "reply_to_note_id",
-      as: "replies",
+
+    LeaveRequestNote.belongsTo(models.users, {
+      foreignKey: "commenter_id",
+      as: "commenter",
     });
   };
 
