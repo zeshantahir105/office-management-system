@@ -1,7 +1,4 @@
 const Joi = require("joi");
-const {
-  ViewPaginatedRecordListDTO,
-} = require("../helpers/helpers.controllers.dto");
 
 const AddAttendanceNoteDTO = Joi.object({
   body: {
@@ -28,7 +25,10 @@ const MarkOrUpdateAttendanceDTO = Joi.object({
 const ViewAttendanceNotesDTO = Joi.object({
   attendanceId: Joi.number().required(),
   getNotesOfRoleType: Joi.string().valid("employee", "admin"),
-}).concat(ViewPaginatedRecordListDTO.extract("body"));
+  page: Joi.number().integer().min(1),
+  pageSize: Joi.number().integer().min(1).max(100),
+  userId: Joi.number(),
+});
 
 module.exports = {
   MarkOrUpdateAttendanceDTO,

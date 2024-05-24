@@ -1,7 +1,7 @@
 const express = require("express");
-const { sequelize } = require("./models/");
 const authenticate = require("./middlewares/authenticate");
 
+const { sequelize } = require("./models/");
 const authRoutes = require("./routes/auth.routes");
 const employeeAttendanceRoutes = require("./routes/employee-attendance.routes");
 const leaveRequestRoutes = require("./routes/leave-requests.routes");

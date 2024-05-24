@@ -1,6 +1,18 @@
+require("dotenv").config();
+
+const {
+  NODE_ENV,
+  DB_DIALECT,
+  DB_USERNAME,
+  DB_PASSWORD,
+  DB_HOST,
+  DB_PORT,
+  DB_NAME,
+} = process.env;
+
 module.exports = {
-  local: {
-    url: "postgres://postgres:root@localhost:5432/zeshan-oms",
-    dialect: "postgres",
+  [NODE_ENV]: {
+    url: `${DB_DIALECT}://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`,
+    dialect: DB_DIALECT,
   },
 };

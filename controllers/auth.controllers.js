@@ -1,10 +1,8 @@
 const db = require("../models/index");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const users = require("../models/users.model");
 const { validateRequest, sendResponse } = require("../utils/validation.utils");
 const DTO = require("./dtos/auth.controllers.dto");
-const { Op } = require("sequelize");
 
 /**
  * @param {*} req

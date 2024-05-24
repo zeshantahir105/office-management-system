@@ -1,13 +1,13 @@
 const {
-  viewPaginatedRecordList,
-} = require("../controllers/helpers/helpers.controllers");
-const {
   addLeaveRequestNote,
   updateLeaveRequestNote,
   deleteLeaveRequestNote,
   viewLeaveRequestNotes,
   replyToLeaveRequestNotes,
   deleteLeaveRequest,
+  createOrUpdateLeaveRequest,
+  approveOrRejectLeaveRequest,
+  viewLeaveRequests,
 } = require("../controllers/leave-requests.controllers");
 const authenticate = require("../middlewares/authenticate");
 
@@ -18,7 +18,7 @@ const router = express.Router();
 router.post(
   "/apply",
   authenticate,
-  async (req, res, next) => await applyForLeave(req, res, next)
+  async (req, res, next) => await createOrUpdateLeaveRequest(req, res, next)
 );
 
 router.post(
@@ -37,13 +37,7 @@ router.post(
 router.get(
   "/view-leave-requests",
   authenticate,
-  async (req, res, next) =>
-    await viewPaginatedRecordList({
-      req,
-      res,
-      next,
-      tableName: "leave_requests",
-    })
+  async (req, res, next) => await viewLeaveRequests(req, res, next)
 );
 
 router.post(
@@ -64,7 +58,6 @@ router.post(
   async (req, res, next) => await deleteLeaveRequestNote(req, res, next)
 );
 
-// it can fetch the all notes against the leave reqeust and also, by the user role type
 router.get(
   "/view-notes",
   authenticate,

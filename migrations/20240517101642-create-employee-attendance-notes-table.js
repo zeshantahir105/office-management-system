@@ -23,7 +23,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: {
-          model: "leave_request_notes",
+          model: "attendance_notes",
           key: "note_id",
         },
         onUpdate: "CASCADE",

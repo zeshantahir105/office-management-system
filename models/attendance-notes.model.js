@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
-          model: "leave_request_notes",
+          model: "attendance_notes",
           key: "note_id",
         },
         onUpdate: "CASCADE",
@@ -71,9 +71,13 @@ module.exports = (sequelize, DataTypes) => {
       as: "commenter",
     });
 
+    AttendanceNote.hasMany(models.attendance_notes, {
+      foreignKey: "replyToNoteId",
+      as: "replies",
+    });
     AttendanceNote.belongsTo(models.attendance_notes, {
-      foreignKey: "reply_to_note_id",
-      as: "replyToNote",
+      foreignKey: "replyToNoteId",
+      as: "parentNote",
     });
   };
 

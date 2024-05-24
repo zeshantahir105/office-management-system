@@ -2,7 +2,7 @@ const {
   validateRequest,
   sendResponse,
 } = require("../../utils/validation.utils");
-const DTO = require("./helpers.controllers.dto");
+const DTO = require("../dtos/helpers.controllers.dto");
 const { Op } = require("sequelize");
 const db = require("../../models");
 
@@ -11,6 +11,7 @@ const viewPaginatedRecordList = async ({
   res,
   next,
   tableName,
+  dateTimeColName,
   predefinedQueryOptions,
 }) => {
   try {
@@ -30,19 +31,25 @@ const viewPaginatedRecordList = async ({
     let totalRecords;
     let totalPages;
 
-    const queryOptions = predefinedQueryOptions || {
-      where: {
-        // employee will be able to see his/her own records, however admins can see records of other user with id as userId
-        userId: roleType == "employee" ? loggedInUserId : userId,
-      },
-    };
+    const queryOptions =
+      predefinedQueryOptions ||
+      (roleType == "admin" && !userId
+        ? {}
+        : {
+            where: {
+              // employee will be able to see his/her own records, however admins can see records of other user with id as userId
+              userId: roleType == "employee" ? loggedInUserId : userId,
+            },
+          });
 
     const isPaginated = pageSize && page;
     const hasDateRange = dateFrom && dateTo;
 
     // If they want to see in a date range
     if (hasDateRange) {
-      queryOptions.where.dateTime = { [Op.between]: [dateFrom, dateTo] };
+      queryOptions.where[dateTimeColName || "dateTime"] = {
+        [Op.between]: [dateFrom, dateTo],
+      };
     }
 
     // if it is paginated
@@ -84,7 +91,7 @@ const viewPaginatedRecordList = async ({
       },
     });
   } catch (error) {
-    next?.(error);
+    next(error);
   }
 };
 

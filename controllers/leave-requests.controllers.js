@@ -2,6 +2,7 @@ const db = require("../models/index");
 const { validateRequest, sendResponse } = require("../utils/validation.utils");
 const DTO = require("./dtos/leave-requests.controllers.dto");
 const GeneralDTO = require("./dtos/general.dto");
+const HelpersDTO = require("./dtos/helpers.controllers.dto");
 const { Op } = require("sequelize");
 const { viewPaginatedRecordList } = require("./helpers/helpers.controllers");
 
@@ -17,7 +18,7 @@ const createOrUpdateLeaveRequest = async (req, res, next) => {
   try {
     validateRequest({
       DTO: DTO.CreateOrUpdateLeaveRequestDTO,
-      requestBody: req.body,
+      requestBody: { body: req.body, user: req.user },
     });
 
     const { dateFrom, dateTo, leaveRequestId } = req.body;
@@ -169,16 +170,38 @@ const approveOrRejectLeaveRequest = async (req, res, next) => {
       });
     }
 
-    leaveRequest.status = status;
-    leaveRequest.approverId = id;
-    await leaveRequest.save();
+    const response = await db.leave_requests.update(
+      {
+        status,
+        approverId: id,
+      },
+      {
+        where: { leaveRequestId },
+      }
+    );
+
+    // at 0th index, we will get the number of records updated,
+    // if the number of records updated is 1, then the leave request is updated
+    // else the leave request is not updated
+    if (response?.[0]) {
+      return sendResponse({
+        response: res,
+        object: {
+          data: {
+            success: true,
+          },
+          statusCode: 200,
+          message: `Leave request ${status}!`,
+        },
+      });
+    }
 
     return sendResponse({
       response: res,
       object: {
-        data: leaveRequest,
-        statusCode: 200,
-        message: "Leave request updated successfully",
+        data: null,
+        statusCode: 500,
+        message: "Unable to update the leave request",
       },
     });
   } catch (error) {
@@ -188,9 +211,24 @@ const approveOrRejectLeaveRequest = async (req, res, next) => {
 
 const viewLeaveRequests = async (req, res, next) => {
   try {
+    validateRequest({
+      DTO: HelpersDTO.ViewPaginatedRecordListDTO,
+      requestBody: { user: req.user, body: req.body },
+    });
+
+    const { userId } = req.body;
+    const { id } = req.user;
+
+    const predefinedQueryOptions = id && {
+      where: { requesterId: userId || id },
+    };
+
     return viewPaginatedRecordList({
       req,
       res,
+      next,
+      predefinedQueryOptions,
+      dateTimeColName: "dateFrom",
       tableName: "leave_requests",
     });
   } catch (error) {
@@ -209,10 +247,10 @@ const addLeaveRequestNote = async (req, res, next) => {
   try {
     validateRequest({
       DTO: DTO.AddLeaveRequestNoteDTO,
-      requestBody: req.body,
+      requestBody: { body: req.body, user: req.user },
     });
-    const { note, leaveRequestId, commenterId } = req.body;
-
+    const { note, leaveRequestId } = req.body;
+    const { id: commenterId } = req.user;
     const leaveRequest = await db.leave_requests.findOne({
       where: { leaveRequestId },
     });
@@ -441,7 +479,7 @@ const viewLeaveRequestNotes = async (req, res, next) => {
       };
     }
 
-    const updatedReq = cloneDeep(req);
+    const updatedReq = req;
 
     delete updatedReq.body.leaveRequestId;
     delete updatedReq.body.getNotesOfRoleType;
@@ -449,12 +487,13 @@ const viewLeaveRequestNotes = async (req, res, next) => {
     // Get paginated record list
     return viewPaginatedRecordList({
       res,
+      next,
       req: updatedReq,
       predefinedQueryOptions: queryOptions,
       tableName: "leave_request_notes",
     });
   } catch (error) {
-    next(res);
+    next(error);
   }
 };
 
@@ -519,7 +558,7 @@ const replyToLeaveRequestNotes = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(res);
+    next(error);
   }
 };
 
@@ -535,7 +574,10 @@ const deleteLeaveRequest = async (req, res, next) => {
   try {
     validateRequest({
       DTO: DTO.DeleteLeaveRequestDTO,
-      requestBody: req.body,
+      requestBody: {
+        body: req.body,
+        user: req.user,
+      },
     });
     const { leaveRequestId } = req.body;
 
@@ -589,7 +631,7 @@ const deleteLeaveRequest = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(res);
+    next(error);
   }
 };
 

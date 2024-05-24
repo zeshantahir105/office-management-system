@@ -1,7 +1,5 @@
 const Joi = require("joi");
-const {
-  ViewPaginatedRecordListDTO,
-} = require("../helpers/helpers.controllers.dto");
+const { ViewPaginatedRecordListDTO } = require("./helpers.controllers.dto");
 
 const CreateOrUpdateLeaveRequestDTO = Joi.object({
   body: {
@@ -15,9 +13,14 @@ const CreateOrUpdateLeaveRequestDTO = Joi.object({
 });
 
 const AddLeaveRequestNoteDTO = Joi.object({
-  note: Joi.string().required(),
-  leaveRequestId: Joi.number().required(),
-  commenterId: Joi.number().required(),
+  body: {
+    note: Joi.string().required(),
+    leaveRequestId: Joi.number().required(),
+  },
+  user: {
+    id: Joi.number().required(),
+    roleType: Joi.string().valid("employee", "admin").required(),
+  },
 });
 
 const ViewLeaveRequestNotesDTO = Joi.object({
@@ -39,6 +42,7 @@ const DeleteLeaveRequestDTO = Joi.object({
 const ApproveOrRejectLeaveRequestDTO = Joi.object({
   body: {
     leaveRequestId: Joi.number().required(),
+    status: Joi.string().valid("pending", "approved", "rejected").required(),
   },
   user: {
     id: Joi.number().required(),

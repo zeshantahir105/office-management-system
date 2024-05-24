@@ -31,6 +31,10 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
+      note: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       replyToNoteId: {
         field: "reply_to_note_id",
         type: DataTypes.INTEGER,

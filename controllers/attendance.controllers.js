@@ -2,9 +2,7 @@ const db = require("../models/index");
 const { validateRequest, sendResponse } = require("../utils/validation.utils");
 const DTO = require("./dtos/attendance.controllers.dto");
 const GeneralDTO = require("./dtos/general.dto");
-const { Op } = require("sequelize");
 const { viewPaginatedRecordList } = require("./helpers/helpers.controllers");
-const { cloneDeep } = require("sequelize/lib/utils");
 
 /**
  * @param {*} req
@@ -364,18 +362,14 @@ const viewAttendanceNotes = async (req, res, next) => {
     };
 
     if (getNotesOfRoleType) {
-      queryOptions.include = {
-        model: db.attendance,
-        as: "attendance",
-        include: {
+      queryOptions.include = [
+        {
           model: db.users,
-          as: "users",
+          as: "commenter",
           where: { roleType: getNotesOfRoleType },
-          attributes: {
-            exclude: ["password"],
-          },
+          attributes: ["id", "roleType", "name", "email", "age"],
         },
-      };
+      ];
     }
 
     const updatedReq = req;
@@ -386,12 +380,13 @@ const viewAttendanceNotes = async (req, res, next) => {
     // Get paginated record list
     return viewPaginatedRecordList({
       res,
+      next,
       req: updatedReq,
       predefinedQueryOptions: queryOptions,
       tableName: "attendance_notes",
     });
   } catch (error) {
-    next(res);
+    next(error);
   }
 };
 
@@ -429,10 +424,11 @@ const replyToAttendanceNotes = async (req, res, next) => {
       });
     }
 
-    const response = db.attendance_notes.create({
+    const response = await db.attendance_notes.create({
       note,
       commenterId,
       replyToNoteId: noteId,
+      attendanceId: existingAttendanceNote.attendanceId,
     });
 
     // if response is non empty, then the attendance is created successfully
@@ -456,7 +452,7 @@ const replyToAttendanceNotes = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(res);
+    next(error);
   }
 };
 

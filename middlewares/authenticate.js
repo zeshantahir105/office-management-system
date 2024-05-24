@@ -22,8 +22,6 @@ async function authenticate(req, res, next) {
 
   if (!user) return res.sendStatus(401); // If there's no token, return 401 (Unauthorized)
 
-  console.log("USER", { user });
-
   jwt.verify(token, process.env.JWT_SECRET, (err) => {
     if (err) return res.sendStatus(403); // If the token is invalid, return 403 (Forbidden)
     req.user = {
